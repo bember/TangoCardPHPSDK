@@ -108,8 +108,6 @@ class TangoCard extends TangoCardBase {
         $tangoCardApiUrl = self::$appModes[$this->appMode];
         $requestEndpoint = self::$url[$request_type];
         $url=$tangoCardApiUrl . "/" . $this->tangoCardApiVersion . "/" . $requestEndpoint;
-        echo $url;
-
         return $url;
     }
 
@@ -195,8 +193,8 @@ class TangoCard extends TangoCardBase {
         $data['identifier'] = $accountIdentifier;
         $data['email'] = $email;
         $requestUrl = $this->getRequestUrl('createAccount');
-        $t = parent::makeRequest($requestUrl, $data, TRUE);
-        return json_decode($t);
+        $response = parent::makeRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
 
     }
 
@@ -219,8 +217,8 @@ class TangoCard extends TangoCardBase {
         $data['credit_card'] = $ccInfo;
         if ($data) {
             $requestUrl = $this->getRequestUrl('registerCreditCard');
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
+            $response = parent::makeRequest($requestUrl, $data, TRUE);
+            return json_decode($response);
         } else {
             //throw exception
         }
@@ -235,8 +233,8 @@ class TangoCard extends TangoCardBase {
         $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
         if ($data) {
             $requestUrl = $this->getRequestUrl('fundAccount');
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
+            $response = parent::makeRequest($requestUrl, $data, TRUE);
+            echo $response;
         } else {
             //throw exception
         }
@@ -248,8 +246,8 @@ class TangoCard extends TangoCardBase {
         $data['cc_token'] = $cc_token;
         if ($data) {
             $requestUrl = $this->getRequestUrl('deleteCreditCard');
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
+            $response = parent::makeRequest($requestUrl, $data, TRUE);
+            return json_decode($response);
         } else {
             //throw exception
         }
@@ -269,8 +267,8 @@ class TangoCard extends TangoCardBase {
         if ($data) {
             $requestUrl = $this->getRequestUrl('placeOrder');
 //            die($requestUrl);
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
+            $response = parent::makeRequest($requestUrl, $data, TRUE);
+            return json_decode($response);
         } else {
             //throw exception
         }
@@ -278,15 +276,15 @@ class TangoCard extends TangoCardBase {
 
     public function getOrderInfo($orderId) {
         $requestUrl = $this->getRequestUrl('getOrderInfo') . $orderId;
-        $t = parent::makeRequest($requestUrl);
-        echo $t;
+        $response = parent::makeRequest($requestUrl);
+        return json_decode($response);
     }
 
     public function getAccountInfo($customer, $accountId) {
         if ($customer && $accountId) {
             $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
-            $t = parent::makeRequest($requestUrl);
-            echo $t;
+            $response = parent::makeRequest($requestUrl);
+            return json_decode($response);
             return json_decode($t);
 
         } else {
@@ -296,8 +294,8 @@ class TangoCard extends TangoCardBase {
 
     public function listRewards() {
         $requestUrl = $this->getRequestUrl('listRewards');
-        $t = parent::makeRequest($requestUrl);
-        echo $t;
+        $response = parent::makeRequest($requestUrl);
+        return json_decode($response);
     }
 
     public function getOrderHistory($customer, $accountId, $offset = NULL, $limit = NULL, $startDate = NULL, $endDate = NULL) {
@@ -322,8 +320,8 @@ class TangoCard extends TangoCardBase {
             $query.='&end_date=' . $endDate;
         }
         $requestUrl = $this->getRequestUrl('orderHistory') . $query;
-        $t = parent::makeRequest($requestUrl);
-        echo $t;
+        $response = parent::makeRequest($requestUrl);
+        return json_decode($response);
     }
 
 }
