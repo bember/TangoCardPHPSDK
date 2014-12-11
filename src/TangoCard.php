@@ -57,7 +57,6 @@ class TangoCard extends TangoCardBase {
      * @var string
      */
     protected $tangoCardApiVersion = 'v1';
-    public static $appModes = array("production", "sandbox");
 
     /**
      * set application Configurations.
@@ -71,7 +70,7 @@ class TangoCard extends TangoCardBase {
      * @return BaseTangoCard
      */
     public function setAppMode($appMode) {
-        if (in_array($appMode, self::$appModes))
+        if (in_array($appMode, array_keys(self::$appModes)))
             $this->appMode = $appMode;
         else
             throw new TangoCardAppModeInvalidException();
@@ -79,9 +78,9 @@ class TangoCard extends TangoCardBase {
         return $this;
     }
 
-    public static $apiUrls = array(
-        'sandbox' => 'https://sandbox.tangocard.com/raas/',
-        'production' => 'https://integration-api.tangocard.com/raas/'
+    public static $appModes = array(
+        'sandbox' => 'https://sandbox.tangocard.com/raas',
+        'production' => 'https://integration-api.tangocard.com/raas'
     );
 
     /**
@@ -102,12 +101,16 @@ class TangoCard extends TangoCardBase {
     );
 
     public function getRequestUrl($request_type) {
-        if(!in_array($request_type, self::$url)) {
+        $request_types=array_keys(self::$url);
+        if(!in_array($request_type,  $request_types)) {
             throw new TangoCardRequestTypeInvalidException();
         }
         $tangoCardApiUrl = self::$appModes[$this->appMode];
         $requestEndpoint = self::$url[$request_type];
-        return $tangoCardApiUrl . "/" . self::$tangoCardaApiVersion . "/" . $requestEndpoint;
+        $url=$tangoCardApiUrl . "/" . $this->tangoCardApiVersion . "/" . $requestEndpoint;
+        echo $url;
+
+        return $url;
     }
 
     /**
@@ -193,7 +196,8 @@ class TangoCard extends TangoCardBase {
         $data['email'] = $email;
         $requestUrl = $this->getRequestUrl('createAccount');
         $t = parent::makeRequest($requestUrl, $data, TRUE);
-        echo $t;
+        return json_decode($t);
+
     }
 
     public function registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email) {
@@ -283,6 +287,8 @@ class TangoCard extends TangoCardBase {
             $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
             $t = parent::makeRequest($requestUrl);
             echo $t;
+            return json_decode($t);
+
         } else {
             //throw exception
         }
