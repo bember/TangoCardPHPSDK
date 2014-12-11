@@ -15,7 +15,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-require_once "tangocard_exception.php";
 
 class TangoCardBase {
 

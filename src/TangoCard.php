@@ -35,7 +35,7 @@ class TangoCard extends TangoCardBase {
      *
      * @var string
      */
-    protected $appMode;
+    protected $appMode="production";
 
     /**
      * The Application ID.
@@ -56,7 +56,7 @@ class TangoCard extends TangoCardBase {
      *
      * @var string
      */
-    protected  $tangoCardaApiVersion = 'v1';
+    protected  $tangoCardApiVersion = 'v1';
 
     static const $appModes=array("production","sandbox");
     
@@ -129,7 +129,7 @@ class TangoCard extends TangoCardBase {
      * @return BaseTangoCard
      */
     public function setTangoCardApiVersion($apiVersion) {
-        $this->tangoCardaApiVersion = $apiVersion;
+        $this->tangoCardApiVersion = $apiVersion;
         return $this;
     }
 
@@ -139,7 +139,7 @@ class TangoCard extends TangoCardBase {
      * @return string the Tangocard RAAS api version
      */
     public function getTangoCardApiVersion() {
-        return $this->tangoCardaApiVersion;
+        return $this->tangoCardApiVersion;
     }
 
     /**
