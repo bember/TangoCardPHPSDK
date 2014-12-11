@@ -2,18 +2,29 @@
 
 /**
  * Copyright 2014 Sourcefuse, Inc.
+ *    
+ *    The MIT License (MIT)
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may
- * not use this file except in compliance with the License. You may obtain
- * a copy of the License at
+ *    Copyright (c) 2014 SourceFuse
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *    Permission is hereby granted, free of charge, to any person obtaining a copy
+ *    of this software and associated documentation files (the "Software"), to deal
+ *    in the Software without restriction, including without limitation the rights
+ *    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *    copies of the Software, and to permit persons to whom the Software is
+ *    furnished to do so, subject to the following conditions:
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations
- * under the License.
+ *    The above copyright notice and this permission notice shall be included in all
+ *    copies or substantial portions of the Software.
+ *
+ *    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *    SOFTWARE.
+
  */
 require_once "TangoCardBase.php";
 
@@ -24,7 +35,7 @@ class TangoCard extends TangoCardBase {
      *
      * @var string
      */
-    protected $appMode;
+    protected $appMode="production";
 
     /**
      * The Application ID.
@@ -41,6 +52,16 @@ class TangoCard extends TangoCardBase {
     protected $platformKey;
 
     /**
+     * $appVersion defines tangocard RAAS api version
+     *
+     * @var string
+     */
+    protected  $tangoCardApiVersion = 'v1';
+
+    static const $appModes=array("production","sandbox");
+    
+
+    /**
      * set application Configurations.
      */
 
@@ -51,9 +72,44 @@ class TangoCard extends TangoCardBase {
      *
      * @return BaseTangoCard
      */
+    
     public function setAppMode($appMode) {
+        if(in_array($appMode, self::$appModes)
         $this->appMode = $appMode;
+        else throw new TangoCardAppModeInvalidException();
+
         return $this;
+    }
+
+    public static $apiUrls = array(
+        'sandbox' => 'https://sandbox.tangocard.com/raas/',
+        'production' => 'https://integration-api.tangocard.com/raas/'
+    );
+
+    /**
+     * $url contains available tangocard api's url
+     *
+     * @var array
+     */
+    public static $url = array(
+        'createAccount' => 'accounts',
+        'getAccountInfo' => 'accounts/',
+        'registerCreditCard' => 'cc_register',
+        'fundAccount' => 'cc_fund',
+        'deleteCreditCard' => 'cc_unregister',
+        'listRewards' => 'rewards',
+        'placeOrder' => 'orders',
+        'getOrderInfo' => 'orders/',
+        'orderHistory' => 'orders?',
+    );
+
+    public getRequestUrl($request_type){
+
+        if(!in_array($request_type, self::$url)])
+            throw new TangoCardRequestTypeInvalidException();
+        $tangoCardApiUrl=self::$appModes[$this->appMode];
+        $requestEndpoint=self::$url[$request_type];
+        return $tangoCardApiUrl."/".self::$tangoCardaApiVersion."/".$requestEndpoint;
     }
 
     /**
@@ -66,9 +122,30 @@ class TangoCard extends TangoCardBase {
     }
 
     /**
+     * Set the Tango Card Api Version.
+     *
+     * @param string $apiVersion contains TangoCard Raas Api version
+     *
+     * @return BaseTangoCard
+     */
+    public function setTangoCardApiVersion($apiVersion) {
+        $this->tangoCardApiVersion = $apiVersion;
+        return $this;
+    }
+
+    /**
+     * Get the Tango Card Api Version.
+     *
+     * @return string the Tangocard RAAS api version
+     */
+    public function getTangoCardApiVersion() {
+        return $this->tangoCardApiVersion;
+    }
+
+    /**
      * Set the Platform Name.
      *
-     * @param string $platformName The platform Name
+     * @param string $platformName The platform Name provided by Tango Card
      *
      * @return BaseTangoCard
      */
@@ -80,16 +157,15 @@ class TangoCard extends TangoCardBase {
     /**
      * Get the Platform Name.
      *
-     * @return string the Platform Name
+     * @return string the Platform Name provided by Tango Card
      */
     public function getPlatformName() {
         return $this->platformName;
     }
-
     /**
      * Set the Platform key.
      *
-     * @param string $platformKey The Platform Key
+     * @param string $platformKey The Platform Key  (app secret) Provided by Tango Card
      *
      * @return BaseTangoCard
      */
@@ -99,9 +175,9 @@ class TangoCard extends TangoCardBase {
     }
 
     /**
-     * Get the App Secret.
+     * Get the Platform Key.
      *
-     * @return string the App Secret
+     * @return string The Platform key (app secret) provided by Tango Card
      */
     public function getPlatformKey() {
         return $this->platformKey;
@@ -112,11 +188,12 @@ class TangoCard extends TangoCardBase {
         $this->setPlatformKey($platformKey);
     }
 
+
     public function createAccount($customer, $accountIdentifier, $email) {
         $data['customer'] = $customer;
         $data['identifier'] = $accountIdentifier;
         $data['email'] = $email;
-        $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['createAccount'];
+        $requestUrl = $this->getRequestUrl('createAccount');
         $t = parent::makeRequest($requestUrl, $data, TRUE);
         echo $t;
     }
@@ -139,7 +216,7 @@ class TangoCard extends TangoCardBase {
         $ccInfo['billing_address'] = $billingInfo;
         $data['credit_card'] = $ccInfo;
         if ($data) {
-            $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['registerCreditCard'];
+            $requestUrl = $this->getRequestUrl('registerCreditCard');
             $t = parent::makeRequest($requestUrl, $data, TRUE);
             echo $t;
         } else {
@@ -155,7 +232,7 @@ class TangoCard extends TangoCardBase {
         $data['security_code'] = $security_code;
         $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
         if ($data) {
-            $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['fundAccount'];
+            $requestUrl = $this->getRequestUrl('fundAccount');
             $t = parent::makeRequest($requestUrl, $data, TRUE);
             echo $t;
         } else {
@@ -168,7 +245,7 @@ class TangoCard extends TangoCardBase {
         $data['account_identifier'] = $accountIdentifier;
         $data['cc_token'] = $cc_token;
         if ($data) {
-            $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['deleteCreditCard'];
+            $requestUrl = $this->getRequestUrl('deleteCreditCard');
             $t = parent::makeRequest($requestUrl, $data, TRUE);
             echo $t;
         } else {
@@ -188,7 +265,7 @@ class TangoCard extends TangoCardBase {
         $data['recipient']['name'] = $recipientName;
         $data['recipient']['email'] = $recipientEmail;
         if ($data) {
-            $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['placeOrder'];
+            $requestUrl = $this->getRequestUrl('placeOrder');
 //            die($requestUrl);
             $t = parent::makeRequest($requestUrl, $data, TRUE);
             echo $t;
@@ -198,14 +275,14 @@ class TangoCard extends TangoCardBase {
     }
 
     public function getOrderInfo($orderId) {
-        $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['getOrderInfo'] . $orderId;
+        $requestUrl = $this->getRequestUrl('getOrderInfo') . $orderId;
         $t = parent::makeRequest($requestUrl);
         echo $t;
     }
 
     public function getAccountInfo($customer, $accountId) {
         if ($customer && $accountId) {
-            $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['getAccountInfo'] . $customer . '/' . $accountId;
+            $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
             $t = parent::makeRequest($requestUrl);
             echo $t;
         } else {
@@ -214,7 +291,7 @@ class TangoCard extends TangoCardBase {
     }
 
     public function listRewards() {
-        $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['listRewards'];
+        $requestUrl = $this->getRequestUrl('listRewards');
         $t = parent::makeRequest($requestUrl);
         echo $t;
     }
@@ -240,7 +317,7 @@ class TangoCard extends TangoCardBase {
         if ($endDate) {
             $query.='&end_date=' . $endDate;
         }
-        $requestUrl = parent::$apiUrls['sandbox'] . parent::$appVersion . '/' . parent::$url['orderHistory'] . $query;
+        $1requestUrl = $this->getRequestUrl('orderHistory') . $query;
         $t = parent::makeRequest($requestUrl);
         echo $t;
     }

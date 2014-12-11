@@ -15,7 +15,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-require_once "tangocard_exception.php";
 
 class TangoCardBase {
 
@@ -39,38 +38,10 @@ class TangoCardBase {
     );
 
     /**
-     * $appVersion defines tangocard version
-     *
-     * @var string
-     */
-    public static $appVersion = 'v1';
-
-    /**
      * $apiUrls defines wether the app is in sandbox or production
      *
      * @var array
      */
-    public static $apiUrls = array(
-        'sandbox' => 'https://sandbox.tangocard.com/raas/',
-//        'production' => 'https://integration-api.tangocard.com/raas/'
-    );
-
-    /**
-     * $url contains available tangocard api's url
-     *
-     * @var array
-     */
-    public static $url = array(
-        'createAccount' => 'accounts',
-        'getAccountInfo' => 'accounts/',
-        'registerCreditCard' => 'cc_register',
-        'fundAccount' => 'cc_fund',
-        'deleteCreditCard' => 'cc_unregister',
-        'listRewards' => 'rewards',
-        'placeOrder' => 'orders',
-        'getOrderInfo' => 'orders/',
-        'orderHistory' => 'orders?',
-    );
 
     protected function makeRequest($requestUrl, $params = False, $isPost = FALSE) {
         $ch = curl_init();
