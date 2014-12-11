@@ -35,7 +35,7 @@ class TangoCard extends TangoCardBase {
      *
      * @var string
      */
-    protected $appMode="production";
+    protected $appMode = "production";
 
     /**
      * The Application ID.
@@ -56,10 +56,8 @@ class TangoCard extends TangoCardBase {
      *
      * @var string
      */
-    protected  $tangoCardApiVersion = 'v1';
-
-    static const $appModes=array("production","sandbox");
-    
+    protected $tangoCardApiVersion = 'v1';
+    public static $appModes = array("production", "sandbox");
 
     /**
      * set application Configurations.
@@ -72,11 +70,11 @@ class TangoCard extends TangoCardBase {
      *
      * @return BaseTangoCard
      */
-    
     public function setAppMode($appMode) {
-        if(in_array($appMode, self::$appModes)
-        $this->appMode = $appMode;
-        else throw new TangoCardAppModeInvalidException();
+        if (in_array($appMode, self::$appModes))
+            $this->appMode = $appMode;
+        else
+            throw new TangoCardAppModeInvalidException();
 
         return $this;
     }
@@ -100,16 +98,16 @@ class TangoCard extends TangoCardBase {
         'listRewards' => 'rewards',
         'placeOrder' => 'orders',
         'getOrderInfo' => 'orders/',
-        'orderHistory' => 'orders?',
+        'orderHistory' => 'orders?'
     );
 
-    public getRequestUrl($request_type){
-
-        if(!in_array($request_type, self::$url)])
+    public function getRequestUrl($request_type) {
+        if(!in_array($request_type, self::$url)) {
             throw new TangoCardRequestTypeInvalidException();
-        $tangoCardApiUrl=self::$appModes[$this->appMode];
-        $requestEndpoint=self::$url[$request_type];
-        return $tangoCardApiUrl."/".self::$tangoCardaApiVersion."/".$requestEndpoint;
+        }
+        $tangoCardApiUrl = self::$appModes[$this->appMode];
+        $requestEndpoint = self::$url[$request_type];
+        return $tangoCardApiUrl . "/" . self::$tangoCardaApiVersion . "/" . $requestEndpoint;
     }
 
     /**
@@ -162,6 +160,7 @@ class TangoCard extends TangoCardBase {
     public function getPlatformName() {
         return $this->platformName;
     }
+
     /**
      * Set the Platform key.
      *
@@ -187,7 +186,6 @@ class TangoCard extends TangoCardBase {
         $this->setPlatformName($platformName);
         $this->setPlatformKey($platformKey);
     }
-
 
     public function createAccount($customer, $accountIdentifier, $email) {
         $data['customer'] = $customer;
@@ -317,7 +315,7 @@ class TangoCard extends TangoCardBase {
         if ($endDate) {
             $query.='&end_date=' . $endDate;
         }
-        $1requestUrl = $this->getRequestUrl('orderHistory') . $query;
+        $requestUrl = $this->getRequestUrl('orderHistory') . $query;
         $t = parent::makeRequest($requestUrl);
         echo $t;
     }
