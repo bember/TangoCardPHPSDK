@@ -101,13 +101,13 @@ class TangoCard extends TangoCardBase {
     );
 
     public function getRequestUrl($request_type) {
-        $request_types=array_keys(self::$url);
-        if(!in_array($request_type,  $request_types)) {
+        $request_types = array_keys(self::$url);
+        if (!in_array($request_type, $request_types)) {
             throw new TangoCardRequestTypeInvalidException();
         }
         $tangoCardApiUrl = self::$appModes[$this->appMode];
         $requestEndpoint = self::$url[$request_type];
-        $url=$tangoCardApiUrl . "/" . $this->tangoCardApiVersion . "/" . $requestEndpoint;
+        $url = $tangoCardApiUrl . "/" . $this->tangoCardApiVersion . "/" . $requestEndpoint;
         return $url;
     }
 
@@ -195,7 +195,6 @@ class TangoCard extends TangoCardBase {
         $requestUrl = $this->getRequestUrl('createAccount');
         $response = parent::makeRequest($requestUrl, $data, TRUE);
         return json_decode($response);
-
     }
 
     public function registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email) {
@@ -215,13 +214,9 @@ class TangoCard extends TangoCardBase {
         $billingInfo['zip'] = $zip;
         $ccInfo['billing_address'] = $billingInfo;
         $data['credit_card'] = $ccInfo;
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('registerCreditCard');
-            $response = parent::makeRequest($requestUrl, $data, TRUE);
-            return json_decode($response);
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('registerCreditCard');
+        $response = parent::makeRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
     public function fundAccount($customer, $accountIdentifier, $amount, $cc_token, $security_code) {
@@ -231,26 +226,18 @@ class TangoCard extends TangoCardBase {
         $data['cc_token'] = $cc_token;
         $data['security_code'] = $security_code;
         $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('fundAccount');
-            $response = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $response;
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('fundAccount');
+        $response = parent::makeRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
     public function deleteCreditCard($customer, $accountIdentifier, $cc_token) {
         $data['customer'] = $customer;
         $data['account_identifier'] = $accountIdentifier;
         $data['cc_token'] = $cc_token;
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('deleteCreditCard');
-            $response = parent::makeRequest($requestUrl, $data, TRUE);
-            return json_decode($response);
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('deleteCreditCard');
+        $response = parent::makeRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
     public function placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage, $Sku, $recipientName, $recipientEmail) {
@@ -264,14 +251,9 @@ class TangoCard extends TangoCardBase {
         $data['sku'] = $Sku;
         $data['recipient']['name'] = $recipientName;
         $data['recipient']['email'] = $recipientEmail;
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('placeOrder');
-//            die($requestUrl);
-            $response = parent::makeRequest($requestUrl, $data, TRUE);
-            return json_decode($response);
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('placeOrder');
+        $response = parent::makeRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
     public function getOrderInfo($orderId) {
@@ -281,15 +263,9 @@ class TangoCard extends TangoCardBase {
     }
 
     public function getAccountInfo($customer, $accountId) {
-        if ($customer && $accountId) {
-            $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
-            $response = parent::makeRequest($requestUrl);
-            return json_decode($response);
-            return json_decode($t);
-
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
+        $response = parent::makeRequest($requestUrl);
+        return json_decode($response);
     }
 
     public function listRewards() {
