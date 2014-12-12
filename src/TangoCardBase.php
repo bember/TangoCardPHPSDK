@@ -15,7 +15,6 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-
 class TangoCardBase {
 
     /**
@@ -38,12 +37,11 @@ class TangoCardBase {
     );
 
     /**
-     * $apiUrls defines wether the app is in sandbox or production
+     * This method is used to send request to tangocard
      *
      * @var array
      */
-
-    protected function makeRequest($requestUrl, $params = False, $isPost = FALSE) {
+    protected function tangoCardRequest($requestUrl, $params = False, $isPost = FALSE) {
         $ch = curl_init();
         $opts = self::$CURL_OPTS;
         curl_setopt_array($ch, $opts);
@@ -54,16 +52,14 @@ class TangoCardBase {
         curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__) . DIRECTORY_SEPARATOR . 'tangocard_digicert_chain.pem');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',
-            'Authorization:Basic '. base64_encode($this->platformName.':'.$this->platformKey)
+            'Authorization:Basic ' . base64_encode($this->platformName . ':' . $this->platformKey)
         ));
         $result = curl_exec($ch);
         $error = curl_error($ch);
-        //to configure error msg array
-        if ($result === false) {
+        if (!$result) {
             curl_close($ch);
-            throw $error;
+            throw new TangoCardInvalidRequestException();
         }
-//end error array config
         curl_close($ch);
         return $result;
     }

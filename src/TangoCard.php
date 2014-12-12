@@ -38,14 +38,14 @@ class TangoCard extends TangoCardBase {
     protected $appMode = "production";
 
     /**
-     * The Application ID.
+     * The Platform Name provided by Tangocard.
      *
      * @var string
      */
     protected $platformName;
 
     /**
-     * The Application App Secret.
+     * The Platform Key provided by Tangocard.
      *
      * @var string
      */
@@ -78,15 +78,18 @@ class TangoCard extends TangoCardBase {
         return $this;
     }
 
+    /**
+     * @staticvar array $appModes contains application modes and its endpoints
+     * 
+     */
     public static $appModes = array(
         'sandbox' => 'https://sandbox.tangocard.com/raas',
         'production' => 'https://integration-api.tangocard.com/raas'
     );
 
     /**
-     * $url contains available tangocard api's url
-     *
-     * @var array
+     * @staticvar array $url contains available tangocard api's url
+     * 
      */
     public static $url = array(
         'createAccount' => 'accounts',
@@ -100,16 +103,21 @@ class TangoCard extends TangoCardBase {
         'orderHistory' => 'orders?'
     );
 
-    public function getRequestUrl($request_type) {
-        $request_types=array_keys(self::$url);
-        if(!in_array($request_type,  $request_types)) {
+    /**
+     * get Request Url for requested Api
+     *
+     * @param string $requestType The requested api
+     *
+     * @return BaseTangoCard
+     */
+    public function getRequestUrl($requestType) {
+        $requestTypes = array_keys(self::$url);
+        if (!in_array($requestType, $requestTypes)) {
             throw new TangoCardRequestTypeInvalidException();
         }
         $tangoCardApiUrl = self::$appModes[$this->appMode];
-        $requestEndpoint = self::$url[$request_type];
-        $url=$tangoCardApiUrl . "/" . $this->tangoCardApiVersion . "/" . $requestEndpoint;
-        echo $url;
-
+        $requestEndpoint = self::$url[$requestType];
+        $url = $tangoCardApiUrl . "/" . $this->tangoCardApiVersion . "/" . $requestEndpoint;
         return $url;
     }
 
@@ -185,25 +193,58 @@ class TangoCard extends TangoCardBase {
         return $this->platformKey;
     }
 
+    /**
+     * Constructor
+     */
     public function __construct($platformName, $platformKey) {
         $this->setPlatformName($platformName);
         $this->setPlatformKey($platformKey);
     }
 
+    /**
+     * Create new account.
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountIdentifier The Account Identifier (The identifier of the account for whom to place the order.)
+     * @param string $email The Email
+     * 
+     * @return array in response
+     */
     public function createAccount($customer, $accountIdentifier, $email) {
         $data['customer'] = $customer;
         $data['identifier'] = $accountIdentifier;
         $data['email'] = $email;
         $requestUrl = $this->getRequestUrl('createAccount');
-        $t = parent::makeRequest($requestUrl, $data, TRUE);
-        return json_decode($t);
-
+        $response = parent::tangoCardRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
-    public function registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email) {
+    /**
+     * Register a Credit Card.
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountIdentifier The Account Identifier (The identifier of the account for whom to place the order.)
+     * @param string $ccNumber The Credit Card Number
+     * @param string $securityCode The Credit card's Security Code
+     * @param string $expiration The Account Identifier
+     * @param string $fName The Customer's First Name
+     * @param string $lName The Customer's Last Name
+     * @param string $address The Customer's Address
+     * @param string $city The Customer's City
+     * @param string $state The Customer's State
+     * @param string $zip The Zip Code or postal Code
+     * @param string $state State
+     * @param string $country Country
+     * @param string $email The Customrer's Email
+     * @param string $clientIp The client ip (optional)
+     * 
+     * @return array in response
+     */
+    public function registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email, $clientIp = "0") {
         $data['customer'] = $customer;
         $data['account_identifier'] = $accountIdentifier;
-        $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
+        //If the client ip is not passed, check if $_SERVER REMOTE address is set(php is runnning as a server) else pass 0.0 broadcast address
+        $data['client_ip'] = $clientIp == "0" ? isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0" : $clientIp;
         $ccInfo['number'] = $ccNumber;
         $ccInfo['expiration'] = $expiration;
         $ccInfo['security_code'] = $securityCode;
@@ -217,89 +258,136 @@ class TangoCard extends TangoCardBase {
         $billingInfo['zip'] = $zip;
         $ccInfo['billing_address'] = $billingInfo;
         $data['credit_card'] = $ccInfo;
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('registerCreditCard');
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('registerCreditCard');
+        $response = parent::tangoCardRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
-    public function fundAccount($customer, $accountIdentifier, $amount, $cc_token, $security_code) {
+    /**
+     * Fund a platform's account.
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountIdentifier The Account Identifier (The identifier of the account for whom to place the order.)
+     * @param string $ccToken The Register Credit Card's Token
+     * @param string $securityCode The Credit card's Security Code
+     * @param string $clientIp The client ip (optional)
+     * 
+     * @return array in response
+     */
+    public function fundAccount($customer, $accountIdentifier, $amount, $ccToken, $securityCode, $clientIp = "0") {
         $data['customer'] = $customer;
         $data['account_identifier'] = $accountIdentifier;
         $data['amount'] = $amount;
-        $data['cc_token'] = $cc_token;
-        $data['security_code'] = $security_code;
-        $data['client_ip'] = $_SERVER['REMOTE_ADDR'];
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('fundAccount');
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
-        } else {
-            //throw exception
-        }
+        $data['cc_token'] = $ccToken;
+        $data['security_code'] = $securityCode;
+        //If the client ip is not passed, check if $_SERVER REMOTE address is set(php is runnning as a server) else pass 0.0 broadcast address
+        $data['client_ip'] = $clientIp == "0" ? isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0" : $clientIp;
+        $requestUrl = $this->getRequestUrl('fundAccount');
+        $response = parent::tangoCardRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
-    public function deleteCreditCard($customer, $accountIdentifier, $cc_token) {
+    /**
+     * Delete a registered Credit Card
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountIdentifier The Account Identifier (The identifier of the account for whom to place the order.)
+     * @param string $ccToken The Register Credit Card's Token
+     * 
+     * @return array in response
+     */
+    public function deleteCreditCard($customer, $accountIdentifier, $ccToken) {
         $data['customer'] = $customer;
         $data['account_identifier'] = $accountIdentifier;
-        $data['cc_token'] = $cc_token;
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('deleteCreditCard');
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
-        } else {
-            //throw exception
-        }
+        $data['cc_token'] = $ccToken;
+        $requestUrl = $this->getRequestUrl('deleteCreditCard');
+        $response = parent::tangoCardRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
-    public function placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage, $Sku, $recipientName, $recipientEmail) {
+    /**
+     * Place an order.
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountIdentifier The Account Identifier (The identifier of the account for whom to place the order.)
+     * @param string $campaign Name of the E-mail Campaign 
+     * @param string $rewardFrom An optional 'from name' to display to the recipient
+     * @param string $rewardSubject An optional subject line for the reward email.
+     * @param string $rewardMessage An optional message to the recipient.
+     * @param string $sku The SKU identifying the reward to be purchased
+     * @param float $amount The desired amount (for variable-priced SKUs) of the reward. Must be present for variable-price SKUs, must not be present for static-price SKUs.
+     * @param string $recipientName The name of the recipient.
+     * @param string $recipientEmail The email address of the recipient.
+     * @param bool $sendReward Whether Tango Card should send the reward. If this is false the returned object
+     * 
+     * @return array in response
+     */
+    public function placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage, $sku, $amount, $recipientName, $recipientEmail, $sendReward) {
         $data['customer'] = $customer;
         $data['account_identifier'] = $accountIdentifier;
         $data['campaign'] = $campaign;
         $data['reward_from'] = $rewardFrom;
         $data['reward_subject'] = $rewardSubject;
         $data['reward_message'] = $rewardMessage;
-        $data['send_reward'] = TRUE;
-        $data['sku'] = $Sku;
+        $data['send_reward'] = ($sendReward) ? TRUE : FALSE;
+        $data['sku'] = $sku;
+        $data['amount'] = $amount;
         $data['recipient']['name'] = $recipientName;
         $data['recipient']['email'] = $recipientEmail;
-        if ($data) {
-            $requestUrl = $this->getRequestUrl('placeOrder');
-//            die($requestUrl);
-            $t = parent::makeRequest($requestUrl, $data, TRUE);
-            echo $t;
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('placeOrder');
+        $response = parent::tangoCardRequest($requestUrl, $data, TRUE);
+        return json_decode($response);
     }
 
+    /**
+     * Retrieve a historical order.
+     * 
+     * @param string $orderId The orderId.
+     * 
+     * @return array Order Information
+     */
     public function getOrderInfo($orderId) {
         $requestUrl = $this->getRequestUrl('getOrderInfo') . $orderId;
-        $t = parent::makeRequest($requestUrl);
-        echo $t;
+        $response = parent::tangoCardRequest($requestUrl);
+        return json_decode($response);
     }
 
+    /**
+     * Get Account's Info.
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountId The Account Identifier (The identifier of the account for whom to place the order.)
+     * 
+     * @return array account Info
+     */
     public function getAccountInfo($customer, $accountId) {
-        if ($customer && $accountId) {
-            $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
-            $t = parent::makeRequest($requestUrl);
-            echo $t;
-            return json_decode($t);
-
-        } else {
-            //throw exception
-        }
+        $requestUrl = $this->getRequestUrl('getAccountInfo') . $customer . '/' . $accountId;
+        $response = parent::tangoCardRequest($requestUrl);
+        return json_decode($response);
     }
 
+    /**
+     * A list of rewards
+     * 
+     * @return array reward List
+     */
     public function listRewards() {
         $requestUrl = $this->getRequestUrl('listRewards');
-        $t = parent::makeRequest($requestUrl);
-        echo $t;
+        $response = parent::tangoCardRequest($requestUrl);
+        return json_decode($response);
     }
 
+    /**
+     * Get All Historic Orders
+     * 
+     * @param string $customer The Customer Name (The platform's customer) 
+     * @param string $accountIdentifier The Account Identifier (The identifier of the account for whom to place the order.)
+     * @param string $offset  How far into the resultset to start
+     * @param string $limit  How many to return (maximum of 100).
+     * @param string $startDate datetimes (ISO 8601) between which to search(optional)
+     * @param string $endDate datetimes (ISO 8601) between which to search(optional)
+     * @return array Order History
+     */
     public function getOrderHistory($customer, $accountId, $offset = NULL, $limit = NULL, $startDate = NULL, $endDate = NULL) {
         $query = '';
         if ($customer) {
@@ -322,8 +410,8 @@ class TangoCard extends TangoCardBase {
             $query.='&end_date=' . $endDate;
         }
         $requestUrl = $this->getRequestUrl('orderHistory') . $query;
-        $t = parent::makeRequest($requestUrl);
-        echo $t;
+        $response = parent::tangoCardRequest($requestUrl);
+        return json_decode($response);
     }
 
 }
