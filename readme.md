@@ -23,15 +23,16 @@ All Raas api calls return a stdobject
 
     $tangoCard->createAccount($customer, $accountIdentifier, $email);
 Return values:
-    {
-      "success": true,
-      "account": {
-        "identifier": "$accountIdentifier",
-        "email": "$email",
-        "customer": "$customer",
-        "available_balance": 0
-      }
-    }
+
+        {
+          "success": true,
+          "account": {
+            "identifier": "$accountIdentifier",
+            "email": "$email",
+            "customer": "$customer",
+            "available_balance": 0
+          }
+        }
 
 2) Get Account Information 
 
@@ -63,7 +64,7 @@ Store the cc_token. If lost the credit card cannot be billed
 
 5) Place an Order 
 
-    $tangoCard->placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage,     $sku, $amount, $recipientName, $recipientEmail, $sendReward);
+    $tangoCard->placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage,  $sku, $amount, $recipientName, $recipientEmail, $sendReward);
 
 6) Get Order Information 
 
