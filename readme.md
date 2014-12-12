@@ -8,7 +8,7 @@ Please use the new repository for new projects and contributions.
 TangoCard RAAS PHP SDK (v.1.0.0)
 
 This repository contains the open source PHP SDK that allows you to access TangoCard RAAS from your PHP app. Except as otherwise noted,
-the TangoCard PHP SDK is licensed under the Apache Licence, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).
+the TangoCard PHP SDK is licensed under the MIT License (MIT).
 
 
 Usage
@@ -36,15 +36,15 @@ $tangoCard->getAccountInfo($customer, $accountId);
 
 3) Register Credit Card
 
-$tangoCard->registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email)
+$tangoCard->registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email, $clientIp);
 
 4) Fund an Account 
 
-$tangoCard->fundAccount($customer, $accountIdentifier, $amount, $cc_token, $security_code);
+$tangoCard->fundAccount($customer, $accountIdentifier, $amount, $ccToken, $securityCode, $clientIp);
 
 5) Delete a Credit Card
 
-$tangoCard->deleteCreditCard($customer, $accountIdentifier, $cc_token);
+$tangoCard->deleteCreditCard($customer, $accountIdentifier, $ccToken);
 
 5) Get a List of Rewards 
 
@@ -52,7 +52,7 @@ $tangoCard->listRewards();
 
 5) Place an Order 
 
-$tangoCard->placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage, $Sku, $recipientName, $recipientEmail);
+$tangoCard->placeOrder($customer, $accountIdentifier, $campaign, $rewardFrom, $rewardSubject, $rewardMessage, $sku, $amount, $recipientName, $recipientEmail, $sendReward);
 
 6) Get Order Information 
 
