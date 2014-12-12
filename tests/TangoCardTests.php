@@ -57,7 +57,7 @@ class TangoCardTests extends PHPUnit_Framework_TestCase{
 
 	public function testRegisterCreditCard(){
 		echo 'register registertCreditCard';
-		$response=$this->tango->registertCreditCard(self::$accountname, self::$accountid,'4111111111111111','123','2016-01','FName','LName','Address','Seattle','WA','98116','USA','test@example.com');
+		$response=$this->tango->registerCreditCard(self::$accountname, self::$accountid,'4111111111111111','123','2016-01','FName','LName','Address','Seattle','WA','98116','USA','test@example.com');
 		$this->assertTrue($response->success);
 		self::$ccToken = $response->cc_token;
 		var_dump($response);
