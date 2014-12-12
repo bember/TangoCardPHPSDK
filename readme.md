@@ -11,6 +11,7 @@ Usage
 -----
 
 Create a new instance of tango card
+
     $tangocard = new TangoCard('PLATFORM_ID','PLATFORM_KEY');
     'PLATFORM_ID' & 'PLATFORM_KEY' will be provided by TangoCard
     $tangocard->setAppMode("sandbox"); //By default app mode is production. Change it to sandbox if needed. Skip      //this line in production
