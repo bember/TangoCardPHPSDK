@@ -240,7 +240,7 @@ class TangoCard extends TangoCardBase {
      * 
      * @return array in response
      */
-    public function registertCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email, $clientIp = "0") {
+    public function registerCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email, $clientIp = "0") {
         $data['customer'] = $customer;
         $data['account_identifier'] = $accountIdentifier;
         //If the client ip is not passed, check if $_SERVER REMOTE address is set(php is runnning as a server) else pass 0.0 broadcast address
