@@ -1,5 +1,5 @@
 {
-    "name": "tangocard/raas-php-sdk",
+    "name": "sourcefuse/tangocard",
     "description": "TangoCard RAAS PHP SDK",
     "keywords": ["tangocard", "sdk"],
     "type": "library",
@@ -20,6 +20,6 @@
         "phpunit/phpunit": "4.3.*"
     },
     "autoload": {
-        "classmap": ["src"]
+        "psr-4": {"Sourcefuse\\": "src/"}
     }
 }

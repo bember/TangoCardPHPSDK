@@ -1,4 +1,5 @@
 <?php
+namespace "Sourcefuse";
 
 /**
  * Copyright 2014 SourceFUse Technologies.
@@ -21,7 +22,7 @@
  *
  * @author nitesh srivastava <nitesh.srivastava@sourcefuse.com>
  */
-class TangoCardRequestTypeInvalidException extends Exception {
+class TangoCardRequestTypeInvalidException extends \Exception {
 
     
 }
