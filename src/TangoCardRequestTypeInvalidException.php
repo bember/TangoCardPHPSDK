@@ -1,5 +1,5 @@
 <?php
-namespace "Sourcefuse";
+namespace Sourcefuse;
 
 /**
  * Copyright 2014 SourceFUse Technologies.
