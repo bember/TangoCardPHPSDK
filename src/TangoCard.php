@@ -1,4 +1,5 @@
 <?php
+namespace Sourcefuse;
 
 /**
  * Copyright 2014 Sourcefuse, Inc.
@@ -26,8 +27,6 @@
  *    SOFTWARE.
 
  */
-require_once "TangoCardBase.php";
-
 class TangoCard extends TangoCardBase {
 
     /**

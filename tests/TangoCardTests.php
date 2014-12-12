@@ -1,4 +1,5 @@
 <?php
+use Sourcefuse\TangoCard as TangoCard;
 class TangoCardTests extends PHPUnit_Framework_TestCase{
 	var $tango=null;
 	protected static $accountid = null;
@@ -29,7 +30,7 @@ class TangoCardTests extends PHPUnit_Framework_TestCase{
 	}
 
 	/**
-	* @expectedException TangoCardAppModeInvalidException
+	* @expectedException Sourcefuse\TangoCardAppModeInvalidException
 	*/
 	public function testFakeAppMode(){
 		$this->tango=new TangoCard("TangoTest","5xItr3dMDlEWAa9S4s7vYh7kQ01d5SFePPUoZZiK/vMfbo3A5BvJLAmD4tI=");

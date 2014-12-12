@@ -1,4 +1,5 @@
 <?php
+namespace Sourcefuse;
 
 /**
  * Copyright 2014 Sourcefuse, Inc.
