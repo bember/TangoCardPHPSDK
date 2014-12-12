@@ -43,6 +43,8 @@ Response: Customer details (same as create account)
 
     $tangoCard->registerCreditCard($customer, $accountIdentifier, $ccNumber, $securityCode, $expiration, $fName, $lName, $address, $city, $state, $zip, $country, $email, $clientIp);
               
+Response:
+
     {
     "success": true,
     "cc_token": "27739887",
