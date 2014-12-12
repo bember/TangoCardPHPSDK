@@ -21,7 +21,7 @@
  *
  * @author nitesh srivastava <nitesh.srivastava@sourcefuse.com>
  */
-class TangoCardInvalidRequestException extends Exception {
+class TangoCardNetworkException extends Exception {
 
     
 }
