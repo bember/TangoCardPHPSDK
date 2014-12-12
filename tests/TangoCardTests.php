@@ -73,7 +73,7 @@ class TangoCardTests extends PHPUnit_Framework_TestCase{
 
 	public function testPlaceOrder(){
 		echo 'test Place order';
-		$response=$this->tango->placeOrder(self::$accountname, self::$accountid,'Seattle','From','Subject of the message','message','AMCA-E-500-STD','name','a@a.com');
+		$response=$this->tango->placeOrder(self::$accountname, self::$accountid,'Seattle','From','Subject of the message','message','AMCA-E-500-STD','name','a@a.com',TRUE);
 		$this->assertFalse($response->success);
 		var_dump($response);
 	}

@@ -58,7 +58,7 @@ class TangoCardBase {
         $error = curl_error($ch);
         if (!$result) {
             curl_close($ch);
-            throw new TangoCardInvalidRequestException();
+            throw new TangoCardNetworkException();
         }
         curl_close($ch);
         return $result;
